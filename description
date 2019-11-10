@@ -1,0 +1,9 @@
+PZ.O9 – Rozmieszczanie kamer bezpieczeństwa
+    Jak optymalnie rozmieścić kamery monitoringu w ustalonym pomieszczeniu (suma kwadratów widziana z góry), aby każde miejsce z pomieszczenia było obserwowane przez co najmniej N kamer.
+    Dane wejściowe:
+
+        plik z opisem pomieszczenia w formie macierzy “pikseli” - poszczególne kwadraty są pojedynczymi pikselami,
+        N minimalna liczba kamer, która powinna obserwować każdy punkt pomieszczenia,
+        R - promień okręgu jaki jest w stanie obserwować pojedyncza kamera,
+
+    Dane wyjściowe: współrzędne pikseli, w których powinny być umieszczone kamery.
