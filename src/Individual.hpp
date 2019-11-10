@@ -1,4 +1,5 @@
 #include <vector>
+#include "Input.hpp"
 
 #ifndef INDIVIDUAL_HPP
 #define INDIVIDUAL_HPP
@@ -18,7 +19,7 @@ private:
     unsigned int fitness;                     //fitness function
 
 public:
-    Individual(unsigned int, unsigned int);
+    Individual(unsigned int, unsigned int, Input);
     void calculateFitness(); 
     void completeArrangement();
     void crossover(Individual);

@@ -1,11 +1,15 @@
 #include <iostream>
-#include "Matrix.hpp"
+#include "Input.hpp"
 
 using namespace std;
 
-Matrix::Matrix(istream & in){
+Input::Input(istream & in){
     string str;
     
+    in >> radius;
+    in.get();
+    in >> minNumberOfCameras;
+    in.get();
     in >> height;
     in.get();
     in >> width;
@@ -23,7 +27,7 @@ Matrix::Matrix(istream & in){
     }
 }
 
-void Matrix::displayMatrix(){
+void Input::displayMatrix(){
     for(unsigned int i = 0; i < this->height; i++){
         for(unsigned int j = 0; j < this->width; j++){
             if (this->matrix[i][j] == true)  cout << "1";
@@ -34,10 +38,22 @@ void Matrix::displayMatrix(){
 }
 
 //getters
-unsigned int Matrix::getHeight(){
+unsigned int Input::getHeight(){
     return this->height;
 }
 
-unsigned int Matrix::getWidth(){
+unsigned int Input::getWidth(){
     return this->width;
+}
+
+unsigned int Input::getRadius(){
+    return this->radius;
+}
+
+unsigned int Input::getMinNumberOfCameras(){
+    return this->minNumberOfCameras;
+}
+
+vector <vector <bool>> Input::getMatrix(){
+    return this->matrix;
 }
