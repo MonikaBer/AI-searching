@@ -2,13 +2,10 @@
 #include <fstream>
 #include "Individual.hpp"
 #include "Population.hpp"
-#include "Matrix.hpp"
+#include "Input.hpp"
 #include "lib.hpp"
 
 using namespace std;
-
-#define PPOULATION_SIZE 100
-#define PARENTS_SIZE 30         //in percents
 
 
 int main(int argc, char** argv){
@@ -19,7 +16,7 @@ int main(int argc, char** argv){
 
     ifstream ifs (argv[1]);    
 
-    Matrix matrix(ifs);
+    Input input(ifs);
 
     return 0;
 }

@@ -2,9 +2,9 @@
 
 CC = clang++ -g -O0
 CFLAGS = -Wall -Werror -std=c++11
-SRC1 = ../../src/Matrix.cpp
-SRC2 = matrixTest.cpp
-EXE = matrixTest
+SRC1 = ../../src/Input.cpp
+SRC2 = InputTest.cpp
+EXE = InputTest
 
 all: $(EXE)
 
