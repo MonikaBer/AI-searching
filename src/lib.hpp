@@ -6,6 +6,6 @@
 //#define PROBABILITY_OF_CAMERA_SETTING   50      //in percents
 
 
-
+float pointsDistance(int, int, int, int);  //distance between two points
 
 #endif

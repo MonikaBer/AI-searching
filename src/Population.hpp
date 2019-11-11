@@ -6,18 +6,18 @@
 
 
 struct TheBest {
-    unsigned int individualID;  //the best invidual's index in generation
-    unsigned int fitness;       //number of cameras in the best individual
+    int individualID;  //the best invidual's index in generation
+    int fitness;       //number of cameras in the best individual
 };
 
 class Population {
 private:    
-    unsigned int populationSize;
+    int populationSize;
     std::vector<Individual> population;
     std::vector<Individual> parents;
 
 public:
-    Population(unsigned int , unsigned int, unsigned int);
+    Population(int , int, int);
     void calculateFitnessForIndividuals();
     void selection();                                       //select individuals for crossover 
     void crossover();                                       //new generation creation

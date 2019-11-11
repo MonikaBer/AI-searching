@@ -3,10 +3,10 @@
 #include "Population.hpp"
 
 
-Population::Population(unsigned int pSize, unsigned int  iHeight, unsigned int iWidth) {
+Population::Population(int pSize, int  iHeight, int iWidth) {
     populationSize = pSize;
 
-    for (unsigned int i = 0; i < populationSize; i++) {
+    for (int i = 0; i < populationSize; i++) {
        //population.push_back(Individual(iHeight, iWidth));
     }
 }

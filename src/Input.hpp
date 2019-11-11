@@ -6,10 +6,10 @@
 
 class Input {
 private:
-    unsigned int height;                        //matrix's height
-    unsigned int width;                         //matrix's width
-    unsigned int radius;                        //defines camera's view
-    unsigned int minNumberOfCameras;            //minimum number of cameras monitoring every point
+    int height;                        //matrix's height
+    int width;                         //matrix's width
+    int radius;                        //defines camera's view
+    int minNumberOfCameras;            //minimum number of cameras monitoring every point
     std::vector <std::vector <bool>> matrix;    //input matrix
 
 public:
@@ -17,10 +17,10 @@ public:
     void displayMatrix();
 
     //getters
-    unsigned int getHeight();
-    unsigned int getWidth();
-    unsigned int getRadius();
-    unsigned int getMinNumberOfCameras();
+    int getHeight();
+    int getWidth();
+    int getRadius();
+    int getMinNumberOfCameras();
     std::vector <std::vector <bool>> getMatrix();
 
     friend class Individual;
