@@ -129,39 +129,30 @@ void Individual::cleanNumbersOfCameras()
     }
 }
 
-Individual* Individual::crossover(Individual secondParrent){
-	Individual* child = new Individual(height,width,arrangement,radius);
+Individual Individual::crossover(Individual secondParrent){
+	Individual child(height,width,arrangement,radius);
 	
 	srand(time(NULL));	
-	
-	displayHowMuchCamerasForEachPoint();
-	cout << endl;
-	secondParrent.displayHowMuchCamerasForEachPoint();
-	cout << endl;
 	
 	for(int i = 0; i < height; i++) {
         for(int j = 0; j < width; j++) {
 			if(rand()%2 == 0)
-				child->setPoint(i,j,arrangement[i][j]);
+				child.setPoint(i,j,arrangement[i][j]);
 			else
-				child->setPoint(i,j,secondParrent.getPoint(i,j));
+				child.setPoint(i,j,secondParrent.getPoint(i,j));
         }
     }
 	
-	child->cleanNumbersOfCameras();
+	child.cleanNumbersOfCameras();
 	
 	for(int i = 0; i < height; i++) {
         for(int j = 0; j < width; j++) {
-            if(child->arrangement[i][j].camera == true)
-                child->cameraSettingView(i, j, radius);
+            if(child.arrangement[i][j].camera == true)
+                child.cameraSettingView(i, j, radius);
         }
     }
 	
-	child->displayHowMuchCamerasForEachPoint();
-	
-	delete child;
-	
-	return	NULL;
+	return	child;
 }
 
 // void mutation(){
