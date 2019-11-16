@@ -13,11 +13,12 @@ struct TheBest {
 class Population {
 private:    
     int populationSize;
+	int parentsNumber;
     std::vector<Individual> population;
     std::vector<Individual> parents;
 
 public:
-    Population(int , int, int);
+    Population(int ,int ,Input);
     void calculateFitnessForIndividuals();
     void selection();                                       //select individuals for crossover 
     void crossover();                                       //new generation creation
