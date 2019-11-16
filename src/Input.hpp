@@ -24,6 +24,7 @@ public:
     std::vector <std::vector <bool>> getMatrix();
 
     friend class Individual;
+    friend class Population;
 };
 
 #endif
