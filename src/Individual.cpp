@@ -9,6 +9,7 @@ Individual::Individual(Input input){
     height = input.getHeight();
     width = input.getWidth();
     vector <vector <bool>> matrix = input.getMatrix();
+	radius = input.getRadius();
 
     std::random_device prob;
     std::mt19937 mt(prob());
@@ -37,7 +38,22 @@ Individual::Individual(Input input){
     for(int i = 0; i < height; i++) {
         for(int j = 0; j < width; j++) {
             if(arrangement[i][j].camera == true)
-                this->cameraSettingView(i, j, input.getRadius());
+                this->cameraSettingView(i, j, radius);
+        }
+    }
+}
+
+Individual::Individual(int parrentsHeight, int parrentsWidth, std::vector <std::vector <Point>> parrentsArrangement, int parrentsRadius){
+    height = parrentsHeight;
+    width = parrentsWidth;
+
+    arrangement = parrentsArrangement;
+
+    //cameras view (increment for points)
+    for(int i = 0; i < height; i++) {
+        for(int j = 0; j < width; j++) {
+            if(arrangement[i][j].camera == true)
+                this->cameraSettingView(i, j, parrentsRadius);
         }
     }
 }
@@ -104,9 +120,49 @@ void Individual::cameraSettingView(int x, int y, int radius){
 
 // }
 
-// void crossover(Individual individual){
+void Individual::cleanNumbersOfCameras()
+{
+	for(int i = 0; i < height; i++) {
+        for(int j = 0; j < width; j++) {
+            arrangement[i][j].numberOfCameras = 0;
+        }
+    }
+}
 
-// }
+Individual* Individual::crossover(Individual secondParrent){
+	Individual* child = new Individual(height,width,arrangement,radius);
+	
+	srand(time(NULL));	
+	
+	displayHowMuchCamerasForEachPoint();
+	cout << endl;
+	secondParrent.displayHowMuchCamerasForEachPoint();
+	cout << endl;
+	
+	for(int i = 0; i < height; i++) {
+        for(int j = 0; j < width; j++) {
+			if(rand()%2 == 0)
+				child->setPoint(i,j,arrangement[i][j]);
+			else
+				child->setPoint(i,j,secondParrent.getPoint(i,j));
+        }
+    }
+	
+	child->cleanNumbersOfCameras();
+	
+	for(int i = 0; i < height; i++) {
+        for(int j = 0; j < width; j++) {
+            if(child->arrangement[i][j].camera == true)
+                child->cameraSettingView(i, j, radius);
+        }
+    }
+	
+	child->displayHowMuchCamerasForEachPoint();
+	
+	delete child;
+	
+	return	NULL;
+}
 
 // void mutation(){
 
@@ -142,4 +198,17 @@ void Individual::displayWhereCamerasAre() {
         }
         cout << "\n";
     }
+}
+
+Point Individual::getPoint(int rowNumber, int columnNumber)
+{
+	return arrangement[rowNumber][columnNumber];
+}
+
+//setters
+void Individual::setPoint(int rowNumber, int columnNumber, Point copiedPoint)
+{
+	arrangement[rowNumber][columnNumber].room = copiedPoint.room;
+	arrangement[rowNumber][columnNumber].camera = copiedPoint.camera;
+	
 }
