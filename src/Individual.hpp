@@ -6,38 +6,46 @@
 
 struct Point {
     bool room;            		  	//false - point beyond the room, true - point in the room
-    int numberOfCameras;   	//number of cameras which see the point
+    int numberOfCameras;   	        //number of cameras which see the point
     bool camera;           			//true - camera is here, false - lack of camera
 };
 
 
 class Individual {
 private:    
-    int height;                      	//matrix's height
-    int width;                       	//matrix's width
-    std::vector <std::vector <Point>> arrangement;       //arrangement 
-    int fitness;                     	//fitness function
-    int radius;                         //defines camera's view 
-
+    std::vector<std::vector<Point>> arrangement;        //arrangement 
+    float fitness;                     	                //fitness function
+    int camerasNumber;                                  //how much cameras individual has got
 public:
-    Individual(Input);
-	Individual(int,int,std::vector <std::vector <Point>>,int	);
-    void cameraSettingView(int, int, int);  //setting camera visibility for every point in cameras' view
-    void calculateFitness(); 
-    void completeArrangement();
-	void cleanNumbersOfCameras();			//set numberOfCameras of every pool on 0;
-    Individual crossover(Individual);
-    void mutation();
-    void displayCamerasCoordinates();
-    //getters:
+    static int height;                                  //matrix's height
+    static int width;                       	        //matrix's width 
+    static int radius;                                  //defines camera's view
+    static int minNumberOfCameras;
+    static int roomSurface;                             //how much points is in the room
+ 
+public:
+    Individual(Input &);
+    Individual();
+    void cameraSettingView(int, int);                   //setting camera visibility for every point in cameras' view
+	void cleanNumberOfCamerasForEachPoint();			//set numberOfCameras of every pool on 0            
+    void findCameraCoordinates(int, int &, int &);           
+    Individual crossover(Individual &);
+    void mutation(int);
+    void calcFitness(); 
+
+    //helpers
     void displayRoomAppearance();
-    void displayHowMuchCamerasForEachPoint();
+    void displayHowManyCamerasForEachPoint();
     void displayWhereCamerasAre();
-	Point getPoint(int,int);			//get point from arragement by its number of row and number of column
+    void displayCamerasCoordinates();
+
+    //getters
+    int getCamerasNumber();
+    std::vector<std::vector<Point>> getArrangement();
+    float getFitness();
 
     //setters:
-	
-	void setPoint(int,int,Point);	//set point from arragement by its number of row and number of column
+    void setArrangementAndCamerasNumber(std::vector<std::vector<Point>>, int);
 
     friend class Population;
 };

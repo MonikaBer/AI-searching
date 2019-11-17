@@ -1,31 +1,41 @@
 #include <iostream>
 #include <random> 
+#include <functional>
 #include "Individual.hpp"
 #include "lib.hpp"
 
 using namespace std;
 
-Individual::Individual(Input input){
-    height = input.getHeight();
-    width = input.getWidth();
-    vector <vector <bool>> matrix = input.getMatrix();
-	radius = input.getRadius();
+int Individual::height;
+int Individual::width;
+int Individual::radius;
+int Individual::minNumberOfCameras;
+int Individual::roomSurface;
+
+
+Individual::Individual(Input & input){
+    vector<vector<bool>> matrix = input.getMatrix();
 
     std::random_device prob;
     std::mt19937 mt(prob());
     std::uniform_int_distribution<int> cameraSetting(0, 1);
     int isCamera;
+    camerasNumber = 0;
 
     for(int i = 0; i < height; i++) {
-        vector <Point> row;
+        vector<Point> row;
         for(int j = 0; j < width; j++){
             Point point;
             point.room = matrix[i][j];
             
             if(point.room == true) {
                 isCamera = cameraSetting(mt);
-                if(isCamera == 1)  point.camera = true; 
-                else  point.camera = false;
+                if(isCamera == 1) {
+                    point.camera = true; 
+                    camerasNumber++;
+                } else {
+                    point.camera = false;
+                } 
             } else  point.camera = false;
             
             point.numberOfCameras = 0;  //will be set later
@@ -38,73 +48,62 @@ Individual::Individual(Input input){
     for(int i = 0; i < height; i++) {
         for(int j = 0; j < width; j++) {
             if(arrangement[i][j].camera == true)
-                this->cameraSettingView(i, j, radius);
+                this->cameraSettingView(i, j);
         }
     }
+
+    this->calcFitness();
 }
 
-Individual::Individual(int parrentsHeight, int parrentsWidth, std::vector <std::vector <Point>> parrentsArrangement, int parrentsRadius){
-    height = parrentsHeight;
-    width = parrentsWidth;
+Individual::Individual() {}
 
-    arrangement = parrentsArrangement;
-
-    //cameras view (increment for points)
-    for(int i = 0; i < height; i++) {
-        for(int j = 0; j < width; j++) {
-            if(arrangement[i][j].camera == true)
-                this->cameraSettingView(i, j, parrentsRadius);
-        }
-    }
-}
-
-void Individual::cameraSettingView(int x, int y, int radius){
+void Individual::cameraSettingView(int x, int y){
     this->arrangement[x][y].numberOfCameras++;   //increment for point with camera
     int i = x;
     int j = y;
     int counter;
               
-    for(int l = 1; l <= radius; l++) {                 //first level; max level == radius
+    for(int l = 1; l <= this->radius; l++) {                 //first level; max level == radius
         i--;
         if(i>-1 && i<this->height && j>-1 && j<this->width && this->arrangement[i][j].room == true)  
             this->arrangement[i][j].numberOfCameras++;
         
         for(counter = 0; counter < l; counter++) {
             j++;
-            if(i>-1 && i<this->height && j>-1 && j<this->width && pointsDistance(x,y,i,j) <= radius && this->arrangement[i][j].room == true)
+            if(i>-1 && i<this->height && j>-1 && j<this->width && pointsDistance(x,y,i,j) <= this->radius && this->arrangement[i][j].room == true)
                 this->arrangement[i][j].numberOfCameras++;
         }
         
         for(counter = 0; counter < l; counter++) {
             i++;
-            if(i>-1 && i<this->height && j>-1 && j<this->width && pointsDistance(x,y,i,j) <= radius && this->arrangement[i][j].room == true)
+            if(i>-1 && i<this->height && j>-1 && j<this->width && pointsDistance(x,y,i,j) <= this->radius && this->arrangement[i][j].room == true)
                 this->arrangement[i][j].numberOfCameras++;
             i++;
-            if(i>-1 && i<this->height && j>-1 && j<this->width && pointsDistance(x,y,i,j) <= radius && this->arrangement[i][j].room == true)
+            if(i>-1 && i<this->height && j>-1 && j<this->width && pointsDistance(x,y,i,j) <= this->radius && this->arrangement[i][j].room == true)
                 this->arrangement[i][j].numberOfCameras++;
         }
         
         for(counter = 0; counter < l; counter++) {
             j--;
-            if(i>-1 && i<this->height && j>-1 && j<this->width && pointsDistance(x,y,i,j) <= radius && this->arrangement[i][j].room == true)
+            if(i>-1 && i<this->height && j>-1 && j<this->width && pointsDistance(x,y,i,j) <= this->radius && this->arrangement[i][j].room == true)
                 this->arrangement[i][j].numberOfCameras++;
             j--;
-            if(i>-1 && i<this->height && j>-1 && j<this->width && pointsDistance(x,y,i,j) <= radius && this->arrangement[i][j].room == true)
+            if(i>-1 && i<this->height && j>-1 && j<this->width && pointsDistance(x,y,i,j) <= this->radius && this->arrangement[i][j].room == true)
                 this->arrangement[i][j].numberOfCameras++;
         }    
         
         for(counter = 0; counter < l; counter++) {
             i--;
-            if(i>-1 && i<this->height && j>-1 && j<this->width && pointsDistance(x,y,i,j) <= radius && this->arrangement[i][j].room == true)
+            if(i>-1 && i<this->height && j>-1 && j<this->width && pointsDistance(x,y,i,j) <= this->radius && this->arrangement[i][j].room == true)
                 this->arrangement[i][j].numberOfCameras++;
             i--;
-            if(i>-1 && i<this->height && j>-1 && j<this->width && pointsDistance(x,y,i,j) <= radius && this->arrangement[i][j].room == true)
+            if(i>-1 && i<this->height && j>-1 && j<this->width && pointsDistance(x,y,i,j) <= this->radius && this->arrangement[i][j].room == true)
                 this->arrangement[i][j].numberOfCameras++;
         }
         
         for(counter = 0; counter < l-1; counter++) {
             j++;
-            if(i>-1 && i<this->height && j>-1 && j<this->width && pointsDistance(x,y,i,j) <= radius && this->arrangement[i][j].room == true) 
+            if(i>-1 && i<this->height && j>-1 && j<this->width && pointsDistance(x,y,i,j) <= this->radius && this->arrangement[i][j].room == true) 
                 this->arrangement[i][j].numberOfCameras++;
         }
             
@@ -112,58 +111,193 @@ void Individual::cameraSettingView(int x, int y, int radius){
     }
 }
 
-// void calculateFitness(){
+void Individual::calcFitness() {  //think of changing target function
+    this->fitness = 0.0;
+    for(int i = 0; i < this->height; i++) {
+        for(int j = 0; j < this->width; j++) {
+            if(this->arrangement[i][j].room == true && this->arrangement[i][j].numberOfCameras >= this->minNumberOfCameras)
+                this->fitness++;
+        }
+    }
 
-// }
+    this->fitness /= (float)(this->roomSurface);
+}
 
-// void completeArrangement(){
-
-// }
-
-void Individual::cleanNumbersOfCameras()
-{
-	for(int i = 0; i < height; i++) {
-        for(int j = 0; j < width; j++) {
-            arrangement[i][j].numberOfCameras = 0;
+void Individual::cleanNumberOfCamerasForEachPoint() {
+	for(int i = 0; i < this->height; i++) {
+        for(int j = 0; j < this->width; j++) {
+            this->arrangement[i][j].numberOfCameras = 0;
         }
     }
 }
 
-Individual Individual::crossover(Individual secondParrent){
-	Individual child(height,width,arrangement,radius);
-	
-	srand(time(NULL));	
-	
-	for(int i = 0; i < height; i++) {
-        for(int j = 0; j < width; j++) {
-			if(rand()%2 == 0)
-				child.setPoint(i,j,arrangement[i][j]);
-			else
-				child.setPoint(i,j,secondParrent.getPoint(i,j));
+void Individual::findCameraCoordinates(int cameraNumber, int & x, int & y) {
+    int counter = 0;
+    for(int i = 0; i < this->height; i++) {
+        for(int j = 0; j < this->width; j++) {
+            if(this->arrangement[i][j].camera == true) {
+                counter++;
+                if(counter == cameraNumber) {
+                    x = i;
+                    y = j;
+                    return;
+                }
+            }
         }
     }
-	
-	child.cleanNumbersOfCameras();
-	
-	for(int i = 0; i < height; i++) {
-        for(int j = 0; j < width; j++) {
-            if(child.arrangement[i][j].camera == true)
-                child.cameraSettingView(i, j, radius);
-        }
-    }
-	
-	return	child;
+
+    throw "Number of cameras in Individual is calculated invalidly";
 }
 
-// void mutation(){
-
+// Individual Individual::randomCrossover(Individual & secondParent) {
+// 	Individual offspring(this->arrangement);
+	
+// 	srand(time(NULL));	
+// 	for(int i = 0; i < this->height; i++) {
+//         for(int j = 0; j < this->width; j++) {
+// 			if(rand()%2 == 0)
+// 				offspring.setPoint(i,j,arrangement[i][j]);
+// 			else
+// 				offspring.setPoint(i,j,secondParrent.getPoint(i,j));
+//         }
+//     }
+	
+// 	offspring.cleanNumbersOfCameras();
+	
+// 	for(int i = 0; i < height; i++) {
+//         for(int j = 0; j < width; j++) {
+//             if(offspring.arrangement[i][j].camera == true)
+//                 offspring.cameraSettingView(i, j, radius);
+//         }
+//     }
+	
+// 	return	offspring;
 // }
 
-// void displayCamerasCoordinates(){
+//think of changing (without clean all cameras views)
+Individual Individual::crossover(Individual & secondParent) {
+    int x, y;
+    int parentNumber, cameraNumber;
+    vector<Point2d> camerasToCrossover;                //cameras' coordinates
+    
+    std::random_device prob;
+    std::mt19937 mt(prob());
+    std::uniform_int_distribution<int> whichParent(1,2);
+    
+    Individual offspring;
+    //a greater part of arrangement from parent who will be selected in drawing
+    if(whichParent(mt) == 1) {
+        offspring.setArrangementAndCamerasNumber(this->arrangement, this->camerasNumber);
+        parentNumber = 1;
+    } else {
+        offspring.setArrangementAndCamerasNumber(secondParent.getArrangement(), secondParent.getCamerasNumber());
+        parentNumber = 2;
+    }
 
-// }
+    std::random_device prob2;
+    std::mt19937 mt2(prob2());
+    std::uniform_int_distribution<int> whichCamera(1, offspring.camerasNumber);
 
-//getters
+    //draw cameras to crossover	
+    for(int k = 0; k < CAMERAS_TO_CROSSOVER; k++) {                
+        cameraNumber = whichCamera(mt2);                           //draw camera number to crossover
+        offspring.findCameraCoordinates(cameraNumber, x, y);
+        Point2d point;
+        point.x = x;
+        point.y = y;
+        //cout << "\nx: " << x << ", y: " << y << endl;
+        camerasToCrossover.push_back(point);
+    }
+
+    for(int k = 0; k < CAMERAS_TO_CROSSOVER; k++) {  
+        x = camerasToCrossover[k].x;
+        y = camerasToCrossover[k].y;
+
+        if(whichParent(mt) == 1) {                     //whom camera will be selected
+            if(parentNumber == 2){
+                if(offspring.arrangement[x][y].camera == true && this->arrangement[x][y].camera == false) {
+                    offspring.camerasNumber--;
+                    offspring.arrangement[x][y].camera = false;
+                } else if (offspring.arrangement[x][y].camera == false && this->arrangement[x][y].camera == true) {
+                    offspring.camerasNumber++;
+                    offspring.arrangement[x][y].camera = true;
+                }
+            } //else do nothing
+        } else { //second parent
+            if(parentNumber == 1) {
+                if(offspring.arrangement[x][y].camera == true && secondParent.getArrangement()[x][y].camera == false) {
+                    offspring.camerasNumber--;
+                    offspring.arrangement[x][y].camera = false;
+                } else if (offspring.arrangement[x][y].camera == false && secondParent.getArrangement()[x][y].camera == true) {
+                    offspring.camerasNumber++;
+                    offspring.arrangement[x][y].camera = true;
+                }
+            } //else do nothing
+        }
+    }
+
+	offspring.cleanNumberOfCamerasForEachPoint();
+	
+	for(int i = 0; i < this->height; i++) {
+        for(int j = 0; j < this->width; j++) {
+            if(offspring.arrangement[i][j].camera == true)
+                offspring.cameraSettingView(i, j);
+        }
+    }
+
+	return offspring;
+}
+
+void Individual::mutation(int populationSize) {
+    int pointNumber, counter = 0;
+    
+    std::random_device prob;
+    std::mt19937 mt(prob());
+    std::uniform_int_distribution<int> ifMutation(1, populationSize);
+
+    std::random_device prob2;
+    std::mt19937 mt2(prob2());
+    std::uniform_int_distribution<int> whichRoomPoint(1, this->roomSurface);
+
+    // (1/populationSize) -> probability of mutation
+    if(ifMutation(mt) == 1) {                               //mutation
+        pointNumber = whichRoomPoint(mt2);
+        for(int i = 0; i < this->height; i++) {
+            for(int j = 0; j < this->width; j++) {
+                if(this->arrangement[i][j].room == true) {
+                    counter++;
+                    if(counter == pointNumber) {
+                        if(this->arrangement[i][j].camera == true) {
+                            this->arrangement[i][j].camera = false;
+                            this->camerasNumber--;
+                        } else {
+                            this->arrangement[i][j].camera = true;
+                            this->camerasNumber++;
+                        }
+                        this->cleanNumberOfCamerasForEachPoint();
+
+                        i = this->height;
+                        j = this->width;
+                    }
+                }
+            }
+        }
+    } else {               //without mutation
+        return;
+    }
+
+    //set cameras' view (increment for room points)
+    for(int i = 0; i < this->height; i++) {
+        for(int j = 0; j < this->width; j++) {
+            if(this->arrangement[i][j].camera == true)
+                this->cameraSettingView(i, j);
+        }
+    }
+}
+
+
+//helpers
+
 void Individual::displayRoomAppearance() {
     for(int i = 0; i < this->height; i++) {
         for(int j = 0; j < this->width; j++) {
@@ -173,7 +307,7 @@ void Individual::displayRoomAppearance() {
     }
 }
 
-void Individual::displayHowMuchCamerasForEachPoint() {
+void Individual::displayHowManyCamerasForEachPoint() {
     for(int i = 0; i < this->height; i++) {
         for(int j = 0; j < this->width; j++) {
             cout << this->arrangement[i][j].numberOfCameras << "\t";
@@ -191,15 +325,37 @@ void Individual::displayWhereCamerasAre() {
     }
 }
 
-Point Individual::getPoint(int rowNumber, int columnNumber)
-{
-	return arrangement[rowNumber][columnNumber];
+void Individual::displayCamerasCoordinates() {
+    int counter = 1;
+    for(int i = 0; i < this->height; i++) {
+		for(int j = 0; j < this->width; j++) {
+			if(this->arrangement[i][j].camera == true) {
+				cout << "\tCamera " << counter << ": (" << i << ", " << j << ")\n"; 
+				counter++;
+			}
+		}
+	}
 }
 
+
+//getters
+
+int Individual::getCamerasNumber() {
+    return this->camerasNumber;
+}
+
+vector<vector<Point>> Individual::getArrangement() {
+    return this->arrangement;
+}
+
+float Individual::getFitness() {
+    return this->fitness;
+}
+
+
 //setters
-void Individual::setPoint(int rowNumber, int columnNumber, Point copiedPoint)
-{
-	arrangement[rowNumber][columnNumber].room = copiedPoint.room;
-	arrangement[rowNumber][columnNumber].camera = copiedPoint.camera;
-	
+
+void Individual::setArrangementAndCamerasNumber(vector<vector<Point>> parentArrangement, int parentCamerasNumber){
+    this->arrangement = parentArrangement;
+    this->camerasNumber = parentCamerasNumber;
 }
