@@ -57,58 +57,91 @@ Individual::Individual(Input & input){
 
 Individual::Individual() {}
 
-void Individual::cameraSettingView(int x, int y){
-    this->arrangement[x][y].numberOfCameras++;   //increment for point with camera
-    int i = x;
-    int j = y;
-    int counter;
-              
-    for(int l = 1; l <= this->radius; l++) {                 //first level; max level == radius
-        i--;
-        if(i>-1 && i<this->height && j>-1 && j<this->width && this->arrangement[i][j].room == true)  
-            this->arrangement[i][j].numberOfCameras++;
-        
-        for(counter = 0; counter < l; counter++) {
-            j++;
-            if(i>-1 && i<this->height && j>-1 && j<this->width && pointsDistance(x,y,i,j) <= this->radius && this->arrangement[i][j].room == true)
-                this->arrangement[i][j].numberOfCameras++;
+void Individual::cameraSettingView(Input input){
+	for(int i = 0; i < height; i++) {
+        for(int j = 0; j < width; j++) {
+            if(arrangement[i][j].camera == true)
+                this->cameraSettingView(i, j);
         }
-        
-        for(counter = 0; counter < l; counter++) {
-            i++;
-            if(i>-1 && i<this->height && j>-1 && j<this->width && pointsDistance(x,y,i,j) <= this->radius && this->arrangement[i][j].room == true)
-                this->arrangement[i][j].numberOfCameras++;
-            i++;
-            if(i>-1 && i<this->height && j>-1 && j<this->width && pointsDistance(x,y,i,j) <= this->radius && this->arrangement[i][j].room == true)
-                this->arrangement[i][j].numberOfCameras++;
-        }
-        
-        for(counter = 0; counter < l; counter++) {
-            j--;
-            if(i>-1 && i<this->height && j>-1 && j<this->width && pointsDistance(x,y,i,j) <= this->radius && this->arrangement[i][j].room == true)
-                this->arrangement[i][j].numberOfCameras++;
-            j--;
-            if(i>-1 && i<this->height && j>-1 && j<this->width && pointsDistance(x,y,i,j) <= this->radius && this->arrangement[i][j].room == true)
-                this->arrangement[i][j].numberOfCameras++;
-        }    
-        
-        for(counter = 0; counter < l; counter++) {
-            i--;
-            if(i>-1 && i<this->height && j>-1 && j<this->width && pointsDistance(x,y,i,j) <= this->radius && this->arrangement[i][j].room == true)
-                this->arrangement[i][j].numberOfCameras++;
-            i--;
-            if(i>-1 && i<this->height && j>-1 && j<this->width && pointsDistance(x,y,i,j) <= this->radius && this->arrangement[i][j].room == true)
-                this->arrangement[i][j].numberOfCameras++;
-        }
-        
-        for(counter = 0; counter < l-1; counter++) {
-            j++;
-            if(i>-1 && i<this->height && j>-1 && j<this->width && pointsDistance(x,y,i,j) <= this->radius && this->arrangement[i][j].room == true) 
-                this->arrangement[i][j].numberOfCameras++;
-        }
-            
-        j++;
     }
+}
+
+void Individual::cameraSettingView(int x, int y){
+    //int i = x;
+    //int j = y;
+    //int counter;
+	bool wasTherecorner = false;
+
+	for(int i = 0; i <= radius; i++){
+		if(x+i >= this->height) 
+			break;
+		if(pointsDistance(x,y,x+i,y) > radius)
+				break;
+		for(int j = 0; j <= radius; j++){
+			if(y+j >= this->width)
+				break;
+			if(this->arrangement[x+i][y+j].room == false){
+				wasTherecorner = true;
+				continue;
+			}
+			else if(wasTherecorner == false)
+				this->arrangement[x+i][y+j].numberOfCameras++;
+			else if(isCornerOnLine(x,y,x+i,y+j) == false)
+				this->arrangement[x+i][y+j].numberOfCameras++;
+			if(pointsDistance(x,y,x+i,y+j) > radius)
+				break;
+		}
+		for(int j = -1; j >= -radius; j--){
+			if(y+j<0)
+				break;
+			if(this->arrangement[x+i][y+j].room == false){
+				wasTherecorner = true;
+				continue;
+			}
+			else if(wasTherecorner == false)
+				this->arrangement[x+i][y+j].numberOfCameras++;
+			else if(isCornerOnLine(x,y,x+i,y+j) == false)
+				this->arrangement[x+i][y+j].numberOfCameras++;
+			if(pointsDistance(x,y,x+i,y+j) >= radius)
+				break;
+		}
+	}
+	wasTherecorner = false;
+	for(int i = -1; i >= -radius; i--){
+		if(x+i < 0)
+			break;
+		if(pointsDistance(x,y,x+i,y) > radius)
+				break;
+		for(int j = 0; j <= radius; j++){
+			if(y+j>=this->width)
+				break;
+			if(this->arrangement[x+i][y+j].room == false){
+				wasTherecorner = true;
+				continue;
+			}
+			else if(wasTherecorner == false)
+				this->arrangement[x+i][y+j].numberOfCameras++;
+			else if(isCornerOnLine(x,y,x+i,y+j) == false)
+				this->arrangement[x+i][y+j].numberOfCameras++;
+			if(pointsDistance(x,y,x+i,y+j) > radius)
+				break;
+		}
+		for(int j = -1; j >= -radius; j--){
+			if(y+j<0)
+				break;
+			if(this->arrangement[x+i][y+j].room == false){
+				wasTherecorner = true;
+				continue;
+			}
+			else if(wasTherecorner == false)
+				this->arrangement[x+i][y+j].numberOfCameras++;
+			else if(isCornerOnLine(x,y,x+i,y+j) == false)
+				this->arrangement[x+i][y+j].numberOfCameras++;
+			if(pointsDistance(x,y,x+i,y+j) >= radius)
+				break;
+		}
+	}
+
 }
 
 void Individual::calcFitness() {  //think of changing target function
@@ -127,6 +160,14 @@ void Individual::cleanNumberOfCamerasForEachPoint() {
 	for(int i = 0; i < this->height; i++) {
         for(int j = 0; j < this->width; j++) {
             this->arrangement[i][j].numberOfCameras = 0;
+        }
+    }
+}
+
+void Individual::clearCameras(){
+	for(int i = 0; i < height; i++) {
+        for(int j = 0; j < width; j++) {
+            arrangement[i][j].camera = false;
         }
     }
 }
@@ -248,6 +289,72 @@ Individual Individual::crossover(Individual & secondParent) {
 	return offspring;
 }
 
+bool Individual::isCornerOnLine(int x1, int y1, int x2, int y2){
+     //auxiliary variables
+     int d, dx, dy, ai, bi, xi, yi;
+     int x = x1, y = y1;
+     //setting the drawing direction
+     if (x1 < x2){
+         xi = 1;
+         dx = x2 - x1;
+     }
+     else{
+         xi = -1;
+         dx = x1 - x2;
+     }
+     // setting the drawing direction
+     if (y1 < y2){
+         yi = 1;
+         dy = y2 - y1;
+     }
+     else{
+         yi = -1;
+         dy = y1 - y2;
+     }
+     // OX leading axis
+     if (dx > dy){
+         ai = (dy - dx) * 2;
+         bi = dy * 2;
+         d = bi - dx;
+         while (x != x2){
+             // factor test
+             if (d >= 0){
+                 x += xi;
+                 y += yi;
+                 d += ai;
+             }
+             else{
+                 d += bi;
+                 x += xi;
+             }
+             if(this->arrangement[x][y].room == false)
+				 return true;
+         }
+     }
+     // OY leading axis
+     else{
+         ai = ( dx - dy ) * 2;
+         bi = dx * 2;
+         d = bi - dy;
+		 
+         while (y != y2){
+             //factor test
+             if (d >= 0){
+                 x += xi;
+                 y += yi;
+                 d += ai;
+             }
+             else{
+                 d += bi;
+                 y += yi;
+             }
+			 if(this->arrangement[x][y].room == false)
+				 return true;
+         }
+     }
+	 return false;
+}
+
 void Individual::mutation(int populationSize) {
     int pointNumber, counter = 0;
     
@@ -354,6 +461,9 @@ float Individual::getFitness() {
 
 
 //setters
+void Individual::setCamera(int rowNumber, int columnNumber){
+	arrangement[rowNumber][columnNumber].camera = true;
+}
 
 void Individual::setArrangementAndCamerasNumber(vector<vector<Point>> parentArrangement, int parentCamerasNumber){
     this->arrangement = parentArrangement;

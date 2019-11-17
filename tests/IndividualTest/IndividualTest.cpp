@@ -22,7 +22,7 @@ void IndividualTest(){
     individual.displayWhereCamerasAre();
 
     cout << "\nHow much cameras for each point:\n";
-    individual.displayHowMuchCamerasForEachPoint();
+    individual.displayHowManyCamerasForEachPoint();
 }
 
 void IndividualCrossoverTest(){
@@ -35,14 +35,26 @@ void IndividualCrossoverTest(){
 	Individual i1(input);
 	Individual i2(input);
 	
-	Individual child = i1.crossover(i2);
-	
 	cout << "hmcfep parrent1:" << endl;
-	i1.displayHowMuchCamerasForEachPoint();
+	i1.displayHowManyCamerasForEachPoint();
 	cout << "hmcfep parrent2:" << endl;
-	i2.displayHowMuchCamerasForEachPoint();
+	i2.displayHowManyCamerasForEachPoint();
 	cout << "hmcfep child:" << endl;
-	child.displayHowMuchCamerasForEachPoint();
+	Individual child = i1.crossover(i2);
+	child.displayHowManyCamerasForEachPoint();
+}
+
+void CornerTest(){
+	ifstream ifs ("input2");    
+    Input input(ifs);
+	Individual i(input);
+	i.clearCameras();
+	i.cleanNumberOfCamerasForEachPoint();
+	i.setCamera(4,1);
+	i.cameraSettingView(input);
+	i.displayWhereCamerasAre();
+	cout << endl;
+	i.displayHowManyCamerasForEachPoint();
 }
 
 int main(){
@@ -53,6 +65,9 @@ int main(){
 	
 	cout << "INDIVIDUAL'S CROSSOVER TEST\n\n";
     IndividualCrossoverTest();
+	
+	cout << "INDIVIDUAL'S CORNER TEST\n\n";
+    CornerTest();
 
     return 0;
 }

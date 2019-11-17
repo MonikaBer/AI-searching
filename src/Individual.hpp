@@ -26,11 +26,14 @@ public:
 public:
     Individual(Input &);
     Individual();
+	void cameraSettingView(Input);  //setting camera visibility for every point in all cameras' viewes
     void cameraSettingView(int, int);                   //setting camera visibility for every point in cameras' view
 	void cleanNumberOfCamerasForEachPoint();			//set numberOfCameras of every pool on 0            
+	void clearCameras();		//delete all cameras in the room
     void findCameraCoordinates(int, int &, int &);           
     Individual crossover(Individual &);
-    void mutation(int);
+    bool isCornerOnLine(int,int,int,int);		//check is there a corner between two point
+	void mutation(int);
     void calcFitness(); 
 
     //helpers
@@ -45,6 +48,7 @@ public:
     float getFitness();
 
     //setters:
+	void setCamera(int,int);
     void setArrangementAndCamerasNumber(std::vector<std::vector<Point>>, int);
 
     friend class Population;
