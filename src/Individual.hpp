@@ -14,7 +14,7 @@ struct Point {
 class Individual {
 private:    
     std::vector<std::vector<Point>> arrangement;        //arrangement 
-    float fitness;                     	                //fitness function
+    std::vector<float> fitness;                     	            //fitness function
     int camerasNumber;                                  //how much cameras individual has got
 public:
     static int height;                                  //matrix's height
@@ -26,7 +26,7 @@ public:
 public:
     Individual(Input &);
     Individual();
-	void cameraSettingView(Input);  //setting camera visibility for every point in all cameras' viewes
+	void cameraSettingView();  //setting camera visibility for every point in all cameras' viewes
     void cameraSettingView(int, int);                   //setting camera visibility for every point in cameras' view
 	void cleanNumberOfCamerasForEachPoint();			//set numberOfCameras of every pool on 0            
 	void clearCameras();		//delete all cameras in the room
@@ -45,7 +45,7 @@ public:
     //getters
     int getCamerasNumber();
     std::vector<std::vector<Point>> getArrangement();
-    float getFitness();
+    std::vector<float> getFitness();
 
     //setters:
 	void setCamera(int,int);

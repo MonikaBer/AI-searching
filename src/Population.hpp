@@ -1,5 +1,6 @@
 #include <vector>
 #include "Individual.hpp"
+#include "lib.hpp"
 
 #ifndef POPULATION_HPP
 #define POPULATION_HPP
@@ -9,7 +10,7 @@ class Population {
 private:    
     std::vector<Individual> population;  
 public:    
-    static const int size = 100;         
+    static const int size = POPULATION_SIZE;         
 
 public:
     Population(Input &);

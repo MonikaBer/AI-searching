@@ -30,7 +30,12 @@ void Population::createNewGeneration(){
 }  
 
 void Population::orderPopulation(){
-	sort(this->population.begin(), this->population.end(), [](const Individual & a, const Individual & b) {return a.fitness > b.fitness;});
+	sort(this->population.begin(), this->population.end(), [](const Individual & a, const Individual & b) {
+		if(a.fitness[0] > b.fitness[0]) return false;
+		else if (a.fitness[0] < b.fitness[0])  return true;
+		else if (a.fitness[1] <= b.fitness[1])  return false;
+		else  return true;    
+	});
 }
 
 void Population::cutPopulation(){
@@ -48,6 +53,9 @@ void Population::displayTheBest(){
 	this->population[0].displayWhereCamerasAre();
 	cout << "\nCameras coordinates:\n";
 	this->population[0].displayCamerasCoordinates();
-	cout << "\nIndividual fitness: " << this->population[0].getFitness() << endl;
+	
+	vector<float> fitness = this->population[0].getFitness();
+	cout << "\nIndividual fitness:\nFirst condition: " << fitness[0] << 
+		"\nHow many cameras individual has got: " << fitness[1] << endl;
 }
 
