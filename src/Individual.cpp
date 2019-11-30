@@ -52,12 +52,14 @@ Individual::Individual(Input & input){
         }
     }
 
+    this->fitness.push_back(0.0);
+    this->fitness.push_back(0.0);
     this->calcFitness();
 }
 
 Individual::Individual() {}
 
-void Individual::cameraSettingView(Input input) {
+void Individual::cameraSettingView() {
 	for(int i = 0; i < this->height; i++) {
         for(int j = 0; j < this->width; j++) {
             if(this->arrangement[i][j].camera == true)
@@ -130,15 +132,18 @@ void Individual::cameraSettingView(int x, int y) {
 }
 
 void Individual::calcFitness() {  //think of changing target function
-    this->fitness = 0.0;
+    float firstCondition = 0.0;
     for(int i = 0; i < this->height; i++) {
         for(int j = 0; j < this->width; j++) {
             if(this->arrangement[i][j].room == true && this->arrangement[i][j].numberOfCameras >= this->minNumberOfCameras)
-                this->fitness++;
+                firstCondition++;
         }
     }
 
-    this->fitness /= (float)(this->roomSurface);
+    firstCondition /= (float)(this->roomSurface);
+    this->fitness[0] = firstCondition;             //first condition -> how much room points is saw by min number of cameras
+
+    this->fitness[1] = (float)this->camerasNumber;        //second condition -> individual with lower number of cameras is better
 }
 
 void Individual::cleanNumberOfCamerasForEachPoint() {
@@ -339,13 +344,13 @@ void Individual::mutation(int populationSize) {
     std::mt19937 mt(prob());
     std::uniform_int_distribution<int> ifMutation(1, populationSize);
 
-    std::random_device prob2;
-    std::mt19937 mt2(prob2());
-    std::uniform_int_distribution<int> whichRoomPoint(1, this->roomSurface);
-
     // (1/populationSize) -> probability of mutation
     if(ifMutation(mt) == 1) {                               //mutation
+        std::random_device prob2;
+        std::mt19937 mt2(prob2());
+        std::uniform_int_distribution<int> whichRoomPoint(1, this->roomSurface);
         pointNumber = whichRoomPoint(mt2);
+
         for(int i = 0; i < this->height; i++) {
             for(int j = 0; j < this->width; j++) {
                 if(this->arrangement[i][j].room == true) {
@@ -432,7 +437,7 @@ vector<vector<Point>> Individual::getArrangement() {
     return this->arrangement;
 }
 
-float Individual::getFitness() {
+vector<float> Individual::getFitness() {
     return this->fitness;
 }
 
