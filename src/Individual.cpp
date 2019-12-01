@@ -69,7 +69,8 @@ void Individual::cameraSettingView() {
 }
 
 void Individual::cameraSettingView(int x, int y) {
-	bool wasCornerThere = false;
+	int wasCornerTherei = -1;
+	int wasCornerTherej = -1;
 
 	for(int i = 0; i <= this->radius; i++) {
 		if(x+i >= this->height)  break;
@@ -77,52 +78,75 @@ void Individual::cameraSettingView(int x, int y) {
 		for(int j = 0; j <= this->radius; j++) {
 			if(y+j >= this->width)  break;
 			if(this->arrangement[x+i][y+j].room == false){
-				wasCornerThere = true;
+				if(wasCornerTherei > i)
+					wasCornerTherei = i;
+				if(wasCornerTherej > j)
+					wasCornerTherei = j;
 				continue;
 			}
-			else if(wasCornerThere == false)
-				this->arrangement[x+i][y+j].numberOfCameras++;
+			else if(wasCornerTherej  > j){
+				if(wasCornerTherei > i)
+					this->arrangement[x+i][y+j].numberOfCameras++;
+			}
 			else if(isCornerOnLine(x,y,x+i,y+j) == false)
 				this->arrangement[x+i][y+j].numberOfCameras++;
 			if(pointsDistance(x,y,x+i,y+j) > this->radius)  break;
 		}
+		int wasCornerTherej = -1;
 		for(int j = -1; j >= -(this->radius); j--) {
 			if(y+j < 0)  break;
 			if(this->arrangement[x+i][y+j].room == false){
-				wasCornerThere = true;
+				if(wasCornerTherei > i)
+					wasCornerTherei = i;
+				if(wasCornerTherej < j)
+					wasCornerTherei = j;
 				continue;
 			}
-			else if(wasCornerThere == false)
-				this->arrangement[x+i][y+j].numberOfCameras++;
+			else if(wasCornerTherej  < j){
+				if(wasCornerTherei > i)
+					this->arrangement[x+i][y+j].numberOfCameras++;
+			}
 			else if(isCornerOnLine(x,y,x+i,y+j) == false)
 				this->arrangement[x+i][y+j].numberOfCameras++;
 			if(pointsDistance(x,y,x+i,y+j) >= this->radius)  break;
 		}
 	}
-	wasCornerThere = false;
+	wasCornerTherei = -1;
+	wasCornerTherej = -1;
 	for(int i = -1; i >= -(this->radius); i--) {
 		if(x+i < 0)  break;
 		if(pointsDistance(x,y,x+i,y) > this->radius)  break;
 		for(int j = 0; j <= this->radius; j++) {
 			if(y+j >= this->width)  break;
 			if(this->arrangement[x+i][y+j].room == false){
-				wasCornerThere = true;
+				if(wasCornerTherei < i)
+					wasCornerTherei = i;
+				if(wasCornerTherej > j)
+					wasCornerTherei = j;
 				continue;
 			}
-			else if(wasCornerThere == false)
-				this->arrangement[x+i][y+j].numberOfCameras++;
+			else if(wasCornerTherej  > j){
+				if(wasCornerTherei < i)
+					this->arrangement[x+i][y+j].numberOfCameras++;
+			}
 			else if(isCornerOnLine(x,y,x+i,y+j) == false)
 				this->arrangement[x+i][y+j].numberOfCameras++;
 			if(pointsDistance(x,y,x+i,y+j) > this->radius)  break;
 		}
+		int wasCornerTherej = -1;
 		for(int j = -1; j >= -(this->radius); j--) {
 			if(y+j < 0)  break;
-			if(this->arrangement[x+i][y+j].room == false) {
-				wasCornerThere = true;
+			if(this->arrangement[x+i][y+j].room == false){
+				if(wasCornerTherei < i)
+					wasCornerTherei = i;
+				if(wasCornerTherej < j)
+					wasCornerTherei = j;
 				continue;
 			}
-			else if(wasCornerThere == false)
-				this->arrangement[x+i][y+j].numberOfCameras++;
+			else if(wasCornerTherej  < j){
+				if(wasCornerTherei < i)
+					this->arrangement[x+i][y+j].numberOfCameras++;
+			}
 			else if(isCornerOnLine(x,y,x+i,y+j) == false)
 				this->arrangement[x+i][y+j].numberOfCameras++;
 			if(pointsDistance(x,y,x+i,y+j) >= this->radius)  break;
