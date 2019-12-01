@@ -450,4 +450,7 @@ void Individual::setCamera(int rowNumber, int columnNumber){
 void Individual::setArrangementAndCamerasNumber(vector<vector<Point>> parentArrangement, int parentCamerasNumber){
     this->arrangement = parentArrangement;
     this->camerasNumber = parentCamerasNumber;
+
+    this->fitness.push_back(0.0);
+    this->fitness.push_back(0.0);
 }
