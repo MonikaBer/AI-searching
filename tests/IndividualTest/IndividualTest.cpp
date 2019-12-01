@@ -50,10 +50,12 @@ void CornerTest(){
 	Individual i(input);
 	i.clearCameras();
 	i.cleanNumberOfCamerasForEachPoint();
-	i.setCamera(4,1);
-	i.cameraSettingView(input);
+	i.setCamera(6,5);
+	i.cameraSettingView();
+	printf("\nWHERE CAMERAS ARE:\n");
 	i.displayWhereCamerasAre();
-	cout << endl;
+	
+	printf("\nHOW MANY CAMERAS:\n");
 	i.displayHowManyCamerasForEachPoint();
 }
 
@@ -61,10 +63,10 @@ int main(){
     cout << "\n--------------------INDIVIDUAL_TEST--------------------\n";
 
     cout << "INDIVIDUAL'S CONSTRUCTOR TEST\n\n";
-    IndividualTest();
+    //IndividualTest();
 	
 	cout << "INDIVIDUAL'S CROSSOVER TEST\n\n";
-    IndividualCrossoverTest();
+    //IndividualCrossoverTest();
 	
 	cout << "INDIVIDUAL'S CORNER TEST\n\n";
     CornerTest();
