@@ -73,6 +73,20 @@ Individual::Individual() {}
 //     }
 // }
 
+void Individual::cameraSettingView()
+{
+	int cameraNr = 1;
+    for(int i = 0; i < height; i++) {
+        for(int j = 0; j < width; j++) {
+            if(arrangement[i][j].room == true) {
+                if(arrangement[i][j].camera == true)
+                    this->cameraSettingView(cameraNr);
+                cameraNr++;
+            }
+        }
+    }
+}
+
 void Individual::cameraSettingView(int cameraNr) {
 	for(int i = 0; i < this->height; i++) {
         for(int j = 0; j < this->width; j++) {

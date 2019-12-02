@@ -42,7 +42,7 @@ Input::Input(istream & in){
 
     Individual::roomSurface = counter;
 
-    vector<CamerasView> camerasViews;
+    vector<CameraView> camerasViews;
 
     for(int i = 0; i < height; i++) {
         for(int j = 0; j < width; j++) {
@@ -51,11 +51,11 @@ Input::Input(istream & in){
                 for(int k = 0; k < height; k++) {
                   vector<int> rowC;
                   for(int l = 0; l < width; l++) {
-                    rowC.pus_back(0);
+                    rowC.push_back(0);
                   }
                   cameraView.view.push_back(rowC);
                 }
-                cameraSettingView(ref(cameraView), x, y, radius, matrix);
+                cameraSettingView(cameraView, i, j, radius, matrix);
                 camerasViews.push_back(cameraView);
             }
         }
@@ -64,7 +64,7 @@ Input::Input(istream & in){
     if(camerasViews.size() != counter)
         cout << "Error during setting possible cameras views!\n\n";
 
-    Individual:camerasViews = camerasViews;
+    Individual::camerasViews = camerasViews;
 }
 
 void Input::displayMatrix(){
