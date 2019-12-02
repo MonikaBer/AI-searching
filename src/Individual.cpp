@@ -202,16 +202,6 @@ Individual Individual::crossover(Individual & secondParent) {
 	return offspring;
 }
 
-// bool Individual::doesItMeetRequierments(){
-// 	for(int i = 0; i < this->height; i++){
-// 		for(int j = 0; j < this->width; j++){
-// 			if(this->arrangement[i][j].numberOfCameras < minNumberOfCameras)
-// 				return false;
-// 		}
-// 	}
-// 	return true;
-// }
-
 Individual Individual::randomCrossover(Individual & secondParent) {
     std::random_device prob;
     std::mt19937 mt(prob());

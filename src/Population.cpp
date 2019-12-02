@@ -39,12 +39,11 @@ void Population::createNewGeneration(){
 			}
 		}
 
+		offspring.mutation(this->size);
 		offspring.calcFitness();
-		while(offspring.fitness[0] != 1.0) {
-			offspring.additionalMutation();
-			offspring.calcFitness();
-			//if(offspring.fitness[0] == 1.0)  m=30;
-		}
+		
+		offspring.additionalMutation();
+		offspring.calcFitness();
 		this->population.push_back(offspring);
 	}
 }  
