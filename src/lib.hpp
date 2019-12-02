@@ -13,5 +13,7 @@ struct Point2d {
 };
 
 float pointsDistance(int, int, int, int);  //distance between two points
+void cameraSettingView(CameraView &, int, int, int, std::vector<std::vector<bool>>);
+bool isCornerOnLine(int, int, int, int, std::vector<std::vector<bool>>);
 
 #endif

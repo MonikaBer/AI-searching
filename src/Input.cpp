@@ -1,13 +1,14 @@
 #include <iostream>
 #include "Input.hpp"
 #include "Individual.hpp"
+#include "lib.hpp"
 
 using namespace std;
 
 Input::Input(istream & in){
     string str;
     int counter = 0;                //how much points is in the room
-    
+
     in >> radius;
     in.get();
     in >> minNumberOfCameras;
@@ -21,7 +22,7 @@ Input::Input(istream & in){
     Individual::width = width;
     Individual::radius = radius;
     Individual::minNumberOfCameras = minNumberOfCameras;
-    
+
     for(int i = 0; i < height; i++){
         vector<bool> row;
         getline(in, str);
@@ -33,13 +34,37 @@ Input::Input(istream & in){
                 counter++;
             } else {
                 throw "Incorrect file format";
-            } 
+            }
         }
         matrix.push_back(row);
     }
 
 
-    Individual::roomSurface = counter;    
+    Individual::roomSurface = counter;
+
+    vector<CamerasView> camerasViews;
+
+    for(int i = 0; i < height; i++) {
+        for(int j = 0; j < width; j++) {
+            if(matrix[i][j] == true) {
+                CameraView cameraView;
+                for(int k = 0; k < height; k++) {
+                  vector<int> rowC;
+                  for(int l = 0; l < width; l++) {
+                    rowC.pus_back(0);
+                  }
+                  cameraView.view.push_back(rowC);
+                }
+                cameraSettingView(ref(cameraView), x, y, radius, matrix);
+                camerasViews.push_back(cameraView);
+            }
+        }
+    }
+
+    if(camerasViews.size() != counter)
+        cout << "Error during setting possible cameras views!\n\n";
+
+    Individual:camerasViews = camerasViews;
 }
 
 void Input::displayMatrix(){
