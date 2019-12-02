@@ -24,7 +24,7 @@ void Population::createNewGeneration(){
 		
 		Individual offspring;
 
-		if(this->population[i].getFitness()[0] == 1.0 && this->population[secondParentNumber].getFitness()[0] == 1.0) {
+		if(this->population[i].getFitness()[0] == 1.0 || this->population[secondParentNumber].getFitness()[0] == 1.0) {
 			offspring = this->population[i].crossover(this->population[secondParentNumber]); 
 		} else {
 			//the next, think of changing "offspring =" below
@@ -40,6 +40,9 @@ void Population::createNewGeneration(){
 		}
 
 		offspring.mutation(this->size);
+		offspring.calcFitness();
+		
+		offspring.additionalMutation();
 		offspring.calcFitness();
 		this->population.push_back(offspring);
 	}
