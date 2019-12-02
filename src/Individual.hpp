@@ -38,6 +38,7 @@ public:
 	  void clearCameras();	                             	//delete all cameras in the room
     void findCameraCoordinates(int, int &, int &);
     Individual crossover(Individual &);
+    Individual randomCrossover(Individual &);
     Individual randomCrossover();
     Individual newRandomIndividual();
     bool isCornerOnLine(int,int,int,int);		            //check is there a corner between two point
@@ -56,8 +57,8 @@ public:
     std::vector<float> getFitness();
 
     //setters:
-	  void setCamera(int,int);
-    void setArrangementAndCamerasNumber(std::vector<std::vector<Point>>, int);
+	void setCamera(int,int);
+    void setArrangement(std::vector<std::vector<Point>>);
 
     friend class Population;
 };
