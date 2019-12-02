@@ -35,7 +35,7 @@ Individual::Individual(Input & input){
                     point.camera = true;
                     camerasNumber++;
                 } else {
-                    point.camera = false;
+                   point.camera = false;
                 }
             } else  point.camera = false;
 
@@ -202,6 +202,16 @@ Individual Individual::crossover(Individual & secondParent) {
 	return offspring;
 }
 
+bool Individual::doesItMeetRequierments(){
+	for(int i = 0; i < this->height; i++){
+		for(int j = 0; j < this->width; j++){
+			if(this->arrangement[i][j].numberOfCameras < minNumberOfCameras)
+				return false;
+		}
+	}
+	return true;
+}
+
 Individual Individual::randomCrossover(Individual & secondParent) {
     std::random_device prob;
     std::mt19937 mt(prob());
@@ -342,6 +352,51 @@ void Individual::mutation(int populationSize) {
     } else {               //without mutation
         return;
     }
+	
+	while(this->doesItMeetRequierments() == false){
+		int acx, acy;		// coordinates of additional camera
+		int sacx, sacy;		// coordinates of additional camera on start
+		
+		std::random_device prob3;
+        std::mt19937 mt3(prob3());
+        std::uniform_int_distribution<int> whichRoomPointX(0, this->height);
+        sacx = whichRoomPointX(mt3);
+		
+		std::random_device prob4;
+        std::mt19937 mt4(prob4());
+        std::uniform_int_distribution<int> whichRoomPointY(0, this->width);
+        sacy = whichRoomPointY(mt4);
+		
+		acx = sacx + 1;
+		acy = sacy + 1;
+		
+		if(acy >= this->width){
+			acy = 0;
+			acx++;
+		}
+		if(acx >= this->height){
+			acx = 0;
+		}
+		
+		while(this->arrangement[acx][acy].room == false || this->arrangement[acx][acy].camera == false || this->arrangement[acx][acy].numberOfCameras >= minNumberOfCameras){
+			acy++;
+			if(acy >= this->width){
+				acy = 0;
+				acx++;
+			}
+			if(acx >= this->height){
+				acx = 0;
+				acy = 0;
+			}
+			if(acx == sacx && acy == sacy)
+				break;
+		}
+		
+		if(this->arrangement[acx][acy].room == true || this->arrangement[acx][acy].camera == true || this->arrangement[acx][acy].numberOfCameras < minNumberOfCameras){
+				this->arrangement[acx][acy].camera = true;
+				this->camerasNumber++;
+		}
+	}
 
     //set cameras' view (increment for room points)
     int cameraNr = 1;

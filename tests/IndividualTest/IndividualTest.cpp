@@ -28,9 +28,6 @@ void IndividualTest(){
 void IndividualCrossoverTest(){
     ifstream ifs (INPUT_PATH);    
     Input input(ifs);
-
-    Individual individual(input);
-	Input input2(ifs);
 	
 	Individual i1(input);
 	Individual i2(input);
@@ -63,10 +60,10 @@ int main(){
     cout << "\n--------------------INDIVIDUAL_TEST--------------------\n";
 
     cout << "INDIVIDUAL'S CONSTRUCTOR TEST\n\n";
-    //IndividualTest();
+    IndividualTest();
 	
 	cout << "INDIVIDUAL'S CROSSOVER TEST\n\n";
-    //IndividualCrossoverTest();
+    IndividualCrossoverTest();
 	
 	cout << "INDIVIDUAL'S CORNER TEST\n\n";
     CornerTest();
