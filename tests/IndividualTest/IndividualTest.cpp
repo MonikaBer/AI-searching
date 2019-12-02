@@ -45,12 +45,12 @@ void IndividualCrossoverTest(){
 }
 
 void CornerTest(){
-	ifstream ifs ("input2");    
+	ifstream ifs ("input2");   
     Input input(ifs);
 	Individual i(input);
 	i.clearCameras();
 	i.cleanNumberOfCamerasForEachPoint();
-	i.setCamera(6,5);
+	i.setCamera(5,4);
 	i.cameraSettingView();
 	printf("\nWHERE CAMERAS ARE:\n");
 	i.displayWhereCamerasAre();

@@ -22,7 +22,7 @@ int main(int argc, char** argv){
     Population population(input);
     
     for(int i = 0; i < GENERATIONS_NUMBER; i++){
-        population.createNewGeneration();
+		population.createNewGeneration();
         //now, population is 100 % greater than old population so we have to destroy the worst individuals
         population.orderPopulation();
         population.cutPopulation();

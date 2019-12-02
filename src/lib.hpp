@@ -1,3 +1,5 @@
+#include "Individual.hpp"
+
 #ifndef LIB_HPP
 #define LIB_HPP
 

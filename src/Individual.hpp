@@ -27,7 +27,7 @@ public:
     static int radius;                                  //defines camera's view
     static int minNumberOfCameras;
     static int roomSurface;                             //how much points is in the room
-    static vector<CameraView> camerasViews;           //possible cameras' views
+    static std::vector<CameraView> camerasViews;           //possible cameras' views
 
 public:
     Individual(Input &);
@@ -41,6 +41,7 @@ public:
     bool isCornerOnLine(int,int,int,int);		            //check is there a corner between two point
 	  void mutation(int);
     void calcFitness();
+	void cameraSettingView();
 
     //helpers
     void displayRoomAppearance();
