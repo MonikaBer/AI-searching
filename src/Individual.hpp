@@ -32,16 +32,17 @@ public:
 public:
     Individual(Input &);
     Individual();
-	  //void cameraSettingView();                           //setting camera visibility for every point in all cameras' viewes
+	void cameraSettingView();                           //setting camera visibility for every point in all cameras' viewes
     void cameraSettingView(int);                   //setting camera visibility for every point in cameras' view
 	  void cleanNumberOfCamerasForEachPoint();		      	//set numberOfCameras of every pool on 0
 	  void clearCameras();	                             	//delete all cameras in the room
     void findCameraCoordinates(int, int &, int &);
     Individual crossover(Individual &);
+    Individual randomCrossover();
+    Individual newRandomIndividual();
     bool isCornerOnLine(int,int,int,int);		            //check is there a corner between two point
 	  void mutation(int);
     void calcFitness();
-	void cameraSettingView();
 
     //helpers
     void displayRoomAppearance();
