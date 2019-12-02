@@ -23,15 +23,20 @@ void Population::createNewGeneration(){
 		else	               secondParentNumber = i+1;
 		
 		Individual offspring;
-		//the next, think of changing "offspring =" below
-		if(this->population[i].getCamerasNumber() != 0 && this->population[secondParentNumber].getCamerasNumber() != 0) {
-			offspring = this->population[i].crossover(this->population[secondParentNumber]);   
-		} else if(this->population[i].getCamerasNumber() == 0 && this->population[secondParentNumber].getCamerasNumber() != 0) {
-			offspring = this->population[secondParentNumber].randomCrossover();                
-		} else if(this->population[i].getCamerasNumber() != 0 && this->population[secondParentNumber].getCamerasNumber() == 0) {
-			offspring = this->population[i].randomCrossover();
-		} else {            //both parents haven't got any cameras
-			offspring = this->population[i].newRandomIndividual();
+
+		if(this->population[i].getFitness()[0] == 1.0 && this->population[secondParentNumber].getFitness()[0] == 1.0) {
+			offspring = this->population[i].crossover(this->population[secondParentNumber]); 
+		} else {
+			//the next, think of changing "offspring =" below
+			if(this->population[i].getCamerasNumber() != 0 && this->population[secondParentNumber].getCamerasNumber() != 0) {
+				offspring = this->population[i].randomCrossover(this->population[secondParentNumber]);   
+			} else if(this->population[i].getCamerasNumber() == 0 && this->population[secondParentNumber].getCamerasNumber() != 0) {
+				offspring = this->population[secondParentNumber].randomCrossover();                
+			} else if(this->population[i].getCamerasNumber() != 0 && this->population[secondParentNumber].getCamerasNumber() == 0) {
+				offspring = this->population[i].randomCrossover();
+			} else {            //both parents haven't got any cameras
+				offspring = this->population[i].newRandomIndividual();
+			}
 		}
 
 		offspring.mutation(this->size);
