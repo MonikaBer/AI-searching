@@ -1,5 +1,5 @@
 #include <iostream>
-#include <random> 
+#include <random>
 #include <functional>
 #include "Individual.hpp"
 #include "lib.hpp"
@@ -11,6 +11,7 @@ int Individual::width;
 int Individual::radius;
 int Individual::minNumberOfCameras;
 int Individual::roomSurface;
+vector<CameraView> Individual::camerasViews;
 
 
 Individual::Individual(Input & input){
@@ -27,17 +28,17 @@ Individual::Individual(Input & input){
         for(int j = 0; j < width; j++){
             Point point;
             point.room = matrix[i][j];
-            
+
             if(point.room == true) {
                 isCamera = cameraSetting(mt);
                 if(isCamera == 1) {
-                    point.camera = true; 
+                    point.camera = true;
                     camerasNumber++;
                 } else {
                     point.camera = false;
-                } 
+                }
             } else  point.camera = false;
-            
+
             point.numberOfCameras = 0;  //will be set later
             row.push_back(point);
         }
@@ -45,10 +46,14 @@ Individual::Individual(Input & input){
     }
 
     //cameras view (increment for points)
+    int cameraNr = 1;
     for(int i = 0; i < height; i++) {
         for(int j = 0; j < width; j++) {
-            if(arrangement[i][j].camera == true)
-                this->cameraSettingView(i, j);
+            if(arrangement[i][j].room == true) {
+                if(arrangement[i][j].camera == true)
+                    this->cameraSettingView(cameraNr);
+                cameraNr++;
+            }
         }
     }
 
@@ -59,100 +64,21 @@ Individual::Individual(Input & input){
 
 Individual::Individual() {}
 
-void Individual::cameraSettingView() {
+// void Individual::cameraSettingView() {
+// 	for(int i = 0; i < this->height; i++) {
+//         for(int j = 0; j < this->width; j++) {
+//             if(this->arrangement[i][j].camera == true)
+//                 this->cameraSettingView(i, j);
+//         }
+//     }
+// }
+
+void Individual::cameraSettingView(int cameraNr) {
 	for(int i = 0; i < this->height; i++) {
         for(int j = 0; j < this->width; j++) {
-            if(this->arrangement[i][j].camera == true)
-                this->cameraSettingView(i, j);
+            this->arrangement[i][j].numberOfCameras += this->camerasViews[cameraNr-1].view[i][j];
         }
     }
-}
-
-void Individual::cameraSettingView(int x, int y) {
-	int wasCornerTherei = -1;
-	int wasCornerTherej = -1;
-
-	for(int i = 0; i <= this->radius; i++) {
-		if(x+i >= this->height)  break;
-		if(pointsDistance(x,y,x+i,y) > this->radius)  break;
-		for(int j = 0; j <= this->radius; j++) {
-			if(y+j >= this->width)  break;
-			if(this->arrangement[x+i][y+j].room == false){
-				if(wasCornerTherei > i)
-					wasCornerTherei = i;
-				if(wasCornerTherej > j)
-					wasCornerTherei = j;
-				continue;
-			}
-			else if(wasCornerTherej  > j){
-				if(wasCornerTherei > i)
-					this->arrangement[x+i][y+j].numberOfCameras++;
-			}
-			else if(isCornerOnLine(x,y,x+i,y+j) == false)
-				this->arrangement[x+i][y+j].numberOfCameras++;
-			if(pointsDistance(x,y,x+i,y+j) > this->radius)  break;
-		}
-		int wasCornerTherej = -1;
-		for(int j = -1; j >= -(this->radius); j--) {
-			if(y+j < 0)  break;
-			if(this->arrangement[x+i][y+j].room == false){
-				if(wasCornerTherei > i)
-					wasCornerTherei = i;
-				if(wasCornerTherej < j)
-					wasCornerTherei = j;
-				continue;
-			}
-			else if(wasCornerTherej  < j){
-				if(wasCornerTherei > i)
-					this->arrangement[x+i][y+j].numberOfCameras++;
-			}
-			else if(isCornerOnLine(x,y,x+i,y+j) == false)
-				this->arrangement[x+i][y+j].numberOfCameras++;
-			if(pointsDistance(x,y,x+i,y+j) >= this->radius)  break;
-		}
-	}
-	wasCornerTherei = -1;
-	wasCornerTherej = -1;
-	for(int i = -1; i >= -(this->radius); i--) {
-		if(x+i < 0)  break;
-		if(pointsDistance(x,y,x+i,y) > this->radius)  break;
-		for(int j = 0; j <= this->radius; j++) {
-			if(y+j >= this->width)  break;
-			if(this->arrangement[x+i][y+j].room == false){
-				if(wasCornerTherei < i)
-					wasCornerTherei = i;
-				if(wasCornerTherej > j)
-					wasCornerTherei = j;
-				continue;
-			}
-			else if(wasCornerTherej  > j){
-				if(wasCornerTherei < i)
-					this->arrangement[x+i][y+j].numberOfCameras++;
-			}
-			else if(isCornerOnLine(x,y,x+i,y+j) == false)
-				this->arrangement[x+i][y+j].numberOfCameras++;
-			if(pointsDistance(x,y,x+i,y+j) > this->radius)  break;
-		}
-		int wasCornerTherej = -1;
-		for(int j = -1; j >= -(this->radius); j--) {
-			if(y+j < 0)  break;
-			if(this->arrangement[x+i][y+j].room == false){
-				if(wasCornerTherei < i)
-					wasCornerTherei = i;
-				if(wasCornerTherej < j)
-					wasCornerTherei = j;
-				continue;
-			}
-			else if(wasCornerTherej  < j){
-				if(wasCornerTherei < i)
-					this->arrangement[x+i][y+j].numberOfCameras++;
-			}
-			else if(isCornerOnLine(x,y,x+i,y+j) == false)
-				this->arrangement[x+i][y+j].numberOfCameras++;
-			if(pointsDistance(x,y,x+i,y+j) >= this->radius)  break;
-		}
-	}
-
 }
 
 void Individual::calcFitness() {  //think of changing target function
@@ -206,8 +132,8 @@ void Individual::findCameraCoordinates(int cameraNumber, int & x, int & y) {
 
 // Individual Individual::randomCrossover(Individual & secondParent) {
 // 	Individual offspring(this->arrangement);
-	
-// 	srand(time(NULL));	
+
+// 	srand(time(NULL));
 // 	for(int i = 0; i < this->height; i++) {
 //         for(int j = 0; j < this->width; j++) {
 // 			if(rand()%2 == 0)
@@ -216,17 +142,90 @@ void Individual::findCameraCoordinates(int cameraNumber, int & x, int & y) {
 // 				offspring.setPoint(i,j,secondParrent.getPoint(i,j));
 //         }
 //     }
-	
+
 // 	offspring.cleanNumbersOfCameras();
-	
+
 // 	for(int i = 0; i < height; i++) {
 //         for(int j = 0; j < width; j++) {
 //             if(offspring.arrangement[i][j].camera == true)
 //                 offspring.cameraSettingView(i, j, radius);
 //         }
 //     }
-	
+
 // 	return	offspring;
+// }
+
+//last version
+// Individual Individual::crossover(Individual & secondParent) {
+//     int x, y;
+//     int parentNumber, cameraNumber;
+//     vector<Point2d> camerasToCrossover;                //cameras' coordinates
+
+//     std::random_device prob;
+//     std::mt19937 mt(prob());
+//     std::uniform_int_distribution<int> whichParent(1,2);
+
+//     Individual offspring;
+//     //a greater part of arrangement from parent who will be selected in drawing
+//     if(whichParent(mt) == 1) {
+//         offspring.setArrangementAndCamerasNumber(this->arrangement, this->camerasNumber);
+//         parentNumber = 1;
+//     } else {
+//         offspring.setArrangementAndCamerasNumber(secondParent.getArrangement(), secondParent.getCamerasNumber());
+//         parentNumber = 2;
+//     }
+
+//     std::random_device prob2;
+//     std::mt19937 mt2(prob2());
+//     std::uniform_int_distribution<int> whichCamera(1, offspring.camerasNumber);
+
+//     //draw cameras to crossover
+//     for(int k = 0; k < CAMERAS_TO_CROSSOVER; k++) {
+//         cameraNumber = whichCamera(mt2);                           //draw camera number to crossover
+//         offspring.findCameraCoordinates(cameraNumber, x, y);
+//         Point2d point;
+//         point.x = x;
+//         point.y = y;
+//         camerasToCrossover.push_back(point);
+//     }
+
+//     for(int k = 0; k < CAMERAS_TO_CROSSOVER; k++) {
+//         x = camerasToCrossover[k].x;
+//         y = camerasToCrossover[k].y;
+
+//         if(whichParent(mt) == 1) {                     //whom camera will be selected
+//             if(parentNumber == 2){
+//                 if(offspring.arrangement[x][y].camera == true && this->arrangement[x][y].camera == false) {
+//                     offspring.camerasNumber--;
+//                     offspring.arrangement[x][y].camera = false;
+//                 } else if (offspring.arrangement[x][y].camera == false && this->arrangement[x][y].camera == true) {
+//                     offspring.camerasNumber++;
+//                     offspring.arrangement[x][y].camera = true;
+//                 }
+//             } //else do nothing
+//         } else { //second parent
+//             if(parentNumber == 1) {
+//                 if(offspring.arrangement[x][y].camera == true && secondParent.getArrangement()[x][y].camera == false) {
+//                     offspring.camerasNumber--;
+//                     offspring.arrangement[x][y].camera = false;
+//                 } else if (offspring.arrangement[x][y].camera == false && secondParent.getArrangement()[x][y].camera == true) {
+//                     offspring.camerasNumber++;
+//                     offspring.arrangement[x][y].camera = true;
+//                 }
+//             } //else do nothing
+//         }
+//     }
+
+// 	offspring.cleanNumberOfCamerasForEachPoint();
+
+// 	for(int i = 0; i < this->height; i++) {
+//         for(int j = 0; j < this->width; j++) {
+//             if(offspring.arrangement[i][j].camera == true)
+//                 offspring.cameraSettingView(i, j);
+//         }
+//     }
+
+// 	return offspring;
 // }
 
 Individual Individual::crossover(Individual & secondParent) {
@@ -250,120 +249,77 @@ Individual Individual::crossover(Individual & secondParent) {
 
     std::random_device prob2;
     std::mt19937 mt2(prob2());
-    std::uniform_int_distribution<int> whichCamera(1, offspring.camerasNumber);
-
-    //draw cameras to crossover	
-    for(int k = 0; k < CAMERAS_TO_CROSSOVER; k++) {                
-        cameraNumber = whichCamera(mt2);                           //draw camera number to crossover
-        offspring.findCameraCoordinates(cameraNumber, x, y);
-        Point2d point;
-        point.x = x;
-        point.y = y;
-        camerasToCrossover.push_back(point);
-    }
-
-    for(int k = 0; k < CAMERAS_TO_CROSSOVER; k++) {  
-        x = camerasToCrossover[k].x;
-        y = camerasToCrossover[k].y;
-
-        if(whichParent(mt) == 1) {                     //whom camera will be selected
-            if(parentNumber == 2){
-                if(offspring.arrangement[x][y].camera == true && this->arrangement[x][y].camera == false) {
-                    offspring.camerasNumber--;
-                    offspring.arrangement[x][y].camera = false;
-                } else if (offspring.arrangement[x][y].camera == false && this->arrangement[x][y].camera == true) {
-                    offspring.camerasNumber++;
-                    offspring.arrangement[x][y].camera = true;
-                }
-            } //else do nothing
-        } else { //second parent
-            if(parentNumber == 1) {
-                if(offspring.arrangement[x][y].camera == true && secondParent.getArrangement()[x][y].camera == false) {
-                    offspring.camerasNumber--;
-                    offspring.arrangement[x][y].camera = false;
-                } else if (offspring.arrangement[x][y].camera == false && secondParent.getArrangement()[x][y].camera == true) {
-                    offspring.camerasNumber++;
-                    offspring.arrangement[x][y].camera = true;
-                }
-            } //else do nothing
-        }
-    }
-
-	offspring.cleanNumberOfCamerasForEachPoint();
+    std::uniform_int_distribution<int> whichCamera1(1, this->camerasNumber);
+    std::uniform_int_distribution<int> whichCamera2(1, secondParent.camerasNumber);
 	
-	for(int i = 0; i < this->height; i++) {
-        for(int j = 0; j < this->width; j++) {
-            if(offspring.arrangement[i][j].camera == true)
-                offspring.cameraSettingView(i, j);
+    //draw cameras to crossover
+	x = -1;
+	y = -1;
+    for(int k = 0; k < CAMERAS_TO_CROSSOVER; k++) {                
+		if(whichParent(mt) == 1){
+			cameraNumber = whichCamera1(mt2);                           //draw camera number to crossover
+			//this->findCameraCoordinates(cameraNumber, x, y);
+			int counter = 0;
+			for(int i = 0; i < this->height; i++) {
+				for(int j = 0; j < this->width; j++) {
+					if(this->arrangement[i][j].camera == true) {
+						counter++;
+						if(counter == cameraNumber) {
+							x = i;
+							y = j;
+						}
+					}
+				}
+			}
+		}
+		else{
+			cameraNumber = whichCamera2(mt2);                           //draw camera number to crossover
+			//secondParent.findCameraCoordinates(cameraNumber, x, y);
+			int counter = 0;
+			for(int i = 0; i < this->height; i++) {
+				for(int j = 0; j < this->width; j++) {
+					if(secondParent.arrangement[i][j].camera == true) {
+						counter++;
+						if(counter == cameraNumber) {
+							x = i;
+							y = j;
+						}
+					}
+				}
+			}
+        }
+		
+		if(x >= 0 && x < offspring.height  && y >= 0 && y < offspring.width){
+			if(offspring.arrangement[x][y].camera == true && offspring.arrangement[x][y].room == true) {
+				offspring.arrangement[x][y].camera = false;
+			}	else if (offspring.arrangement[x][y].camera == false && offspring.arrangement[x][y].room == true) {
+				offspring.arrangement[x][y].camera = true;
+			}
+		}
+    }
+	
+	offspring.cleanNumberOfCamerasForEachPoint();
+	offspring.camerasNumber = 0;
+	
+    int cameraNr = 1;
+	for(int i = 0; i < offspring.height; i++) {
+        for(int j = 0; j < offspring.width; j++) {
+            if(offspring.arrangement[i][j].room == true) {
+                if(offspring.arrangement[i][j].camera == true) {
+                    offspring.camerasNumber++;
+                    offspring.cameraSettingView(cameraNr);
+                }
+                cameraNr++;
+            }   
         }
     }
 
 	return offspring;
 }
 
-bool Individual::isCornerOnLine(int x1, int y1, int x2, int y2){
-     //auxiliary variables
-     int d, dx, dy, ai, bi, xi, yi;
-     int x = x1, y = y1;
-     //setting the drawing direction
-     if (x1 < x2) {
-         xi = 1;
-         dx = x2 - x1;
-     } else {
-         xi = -1;
-         dx = x1 - x2;
-     }
-     // setting the drawing direction
-     if (y1 < y2) {
-         yi = 1;
-         dy = y2 - y1;
-     } else {
-         yi = -1;
-         dy = y1 - y2;
-     }
-     // OX leading axis
-     if (dx > dy) {
-         ai = (dy - dx) * 2;
-         bi = dy * 2;
-         d = bi - dx;
-         while (x != x2) {
-             // factor test
-             if (d >= 0) {
-                 x += xi;
-                 y += yi;
-                 d += ai;
-             } else {
-                 d += bi;
-                 x += xi;
-             }
-             if(this->arrangement[x][y].room == false)
-				return true;
-         }
-     } else {  // OY leading axis
-         ai = ( dx - dy ) * 2;
-         bi = dx * 2;
-         d = bi - dy;
-		 
-         while (y != y2) {
-             //factor test
-             if (d >= 0) {
-                 x += xi;
-                 y += yi;
-                 d += ai;
-             } else {
-                 d += bi;
-                 y += yi;
-             }
-			 if(this->arrangement[x][y].room == false)
-				 return true;
-         }
-     }
-	 return false;
-}
-
 void Individual::mutation(int populationSize) {
     int pointNumber, counter = 0;
-    
+
     std::random_device prob;
     std::mt19937 mt(prob());
     std::uniform_int_distribution<int> ifMutation(1, populationSize);
@@ -400,12 +356,18 @@ void Individual::mutation(int populationSize) {
     }
 
     //set cameras' view (increment for room points)
-    for(int i = 0; i < this->height; i++) {
+    int cameraNr = 1;
+	for(int i = 0; i < this->height; i++) {
         for(int j = 0; j < this->width; j++) {
-            if(this->arrangement[i][j].camera == true)
-                this->cameraSettingView(i, j);
+            if(this->arrangement[i][j].room == true) {
+                if(this->arrangement[i][j].camera == true) {
+                    this->cameraSettingView(cameraNr);
+                }
+                cameraNr++;
+            }   
         }
     }
+
 }
 
 
@@ -443,7 +405,7 @@ void Individual::displayCamerasCoordinates() {
     for(int i = 0; i < this->height; i++) {
 		for(int j = 0; j < this->width; j++) {
 			if(this->arrangement[i][j].camera == true) {
-				cout << "\tCamera " << counter << ": (" << i << ", " << j << ")\n"; 
+				cout << "\tCamera " << counter << ": (" << i << ", " << j << ")\n";
 				counter++;
 			}
 		}
