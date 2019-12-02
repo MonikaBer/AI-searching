@@ -1,4 +1,5 @@
 #include <iostream>
+#include <functional>
 #include "Input.hpp"
 #include "Individual.hpp"
 #include "lib.hpp"
@@ -55,7 +56,7 @@ Input::Input(istream & in){
                   }
                   cameraView.view.push_back(rowC);
                 }
-                cameraSettingView(cameraView, i, j, radius, matrix);
+                cameraSettingView(ref(cameraView), i, j, radius, matrix);
                 camerasViews.push_back(cameraView);
             }
         }

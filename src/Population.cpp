@@ -22,7 +22,18 @@ void Population::createNewGeneration(){
 		if(i == this->size-1)  secondParentNumber = 0;
 		else	               secondParentNumber = i+1;
 		
-		Individual offspring = this->population[i].crossover(this->population[secondParentNumber]);
+		Individual offspring;
+		//the next, think of changing "offspring =" below
+		if(this->population[i].getCamerasNumber() != 0 && this->population[secondParentNumber].getCamerasNumber() != 0) {
+			offspring = this->population[i].crossover(this->population[secondParentNumber]);   
+		} else if(this->population[i].getCamerasNumber() == 0 && this->population[secondParentNumber].getCamerasNumber() != 0) {
+			offspring = this->population[secondParentNumber].randomCrossover();                
+		} else if(this->population[i].getCamerasNumber() != 0 && this->population[secondParentNumber].getCamerasNumber() == 0) {
+			offspring = this->population[i].randomCrossover();
+		} else {            //both parents haven't got any cameras
+			offspring = this->population[i].newRandomIndividual();
+		}
+
 		offspring.mutation(this->size);
 		offspring.calcFitness();
 		this->population.push_back(offspring);

@@ -24,11 +24,11 @@ void cameraSettingView(CameraView & cameraView, int x, int y, int radius, std::v
 			}
 			else if(wasCornerTherej  > j && wasCornerTherei > i){
 				cameraView.view[x+i][y+j]++;
-				printf("ok\n");
+				//printf("ok\n");
 			}
 			else if(isCornerOnLine(x,y,x+i,y+j,matrix) == false){
 				cameraView.view[x+i][y+j]++;
-				printf("ok\n");
+				//printf("ok\n");
 			}
 			if(pointsDistance(x,y,x+i,y+j) > radius)  break;
 		}
