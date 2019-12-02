@@ -19,7 +19,7 @@ Individual::Individual(Input & input){
 
     std::random_device prob;
     std::mt19937 mt(prob());
-    std::uniform_int_distribution<int> cameraSetting(0, 1);
+    std::uniform_int_distribution<int> cameraSetting(1, 100);
     int isCamera;
     camerasNumber = 0;
 
@@ -31,7 +31,7 @@ Individual::Individual(Input & input){
 
             if(point.room == true) {
                 isCamera = cameraSetting(mt);
-                if(isCamera == 1) {
+                if(isCamera > 15 && isCamera < 85) {
                     point.camera = true;
                     camerasNumber++;
                 } else {
@@ -135,6 +135,22 @@ void Individual::findCameraCoordinates(int cameraNumber, int & x, int & y) {
     throw "Number of cameras in Individual is calculated invalidly";
 }
 
+void Individual::findPointCoordinates(int pointNr, int & x, int & y) {
+    int counter = 0;
+    for(int i = 0; i < this->height; i++) {
+        for(int j = 0; j < this->width; j++) {
+            if(this->arrangement[i][j].room == true) {
+                counter++;
+                if(counter == pointNr) {
+                    x = i;
+                    y = j;
+                    return;
+                }
+            }
+        }
+    }
+}
+
 Individual Individual::crossover(Individual & secondParent) {
     int x, y;
     int parentNumber, cameraNumber;
@@ -182,35 +198,19 @@ Individual Individual::crossover(Individual & secondParent) {
             }
         }
     }
-	
-	offspring.cleanNumberOfCamerasForEachPoint();
-	offspring.camerasNumber = 0;
-	
-    int cameraNr = 1;
-	for(int i = 0; i < offspring.height; i++) {
-        for(int j = 0; j < offspring.width; j++) {
-            if(offspring.arrangement[i][j].room == true) {
-                if(offspring.arrangement[i][j].camera == true) {
-                    offspring.camerasNumber++;
-                    offspring.cameraSettingView(cameraNr);
-                }
-                cameraNr++;
-            }   
-        }
-    }
 
 	return offspring;
 }
 
-bool Individual::doesItMeetRequierments(){
-	for(int i = 0; i < this->height; i++){
-		for(int j = 0; j < this->width; j++){
-			if(this->arrangement[i][j].numberOfCameras < minNumberOfCameras)
-				return false;
-		}
-	}
-	return true;
-}
+// bool Individual::doesItMeetRequierments(){
+// 	for(int i = 0; i < this->height; i++){
+// 		for(int j = 0; j < this->width; j++){
+// 			if(this->arrangement[i][j].numberOfCameras < minNumberOfCameras)
+// 				return false;
+// 		}
+// 	}
+// 	return true;
+// }
 
 Individual Individual::randomCrossover(Individual & secondParent) {
     std::random_device prob;
@@ -227,22 +227,6 @@ Individual Individual::randomCrossover(Individual & secondParent) {
 				offspring.arrangement[i][j].camera = this->arrangement[i][j].camera;
 			else
 				offspring.arrangement[i][j].camera = secondParent.arrangement[i][j].camera;   //camera setting from secondParent
-        }
-    }
-
-    offspring.cleanNumberOfCamerasForEachPoint();
-	offspring.camerasNumber = 0;
-	
-    int cameraNr = 1;
-	for(int i = 0; i < offspring.height; i++) {
-        for(int j = 0; j < offspring.width; j++) {
-            if(offspring.arrangement[i][j].room == true) {
-                if(offspring.arrangement[i][j].camera == true) {
-                    offspring.camerasNumber++;
-                    offspring.cameraSettingView(cameraNr);
-                }
-                cameraNr++;
-            }   
         }
     }
 
@@ -263,21 +247,6 @@ Individual Individual::randomCrossover() {
         }
     }
 
-	offspring.cleanNumberOfCamerasForEachPoint();
-	offspring.camerasNumber = 0;
-
-    int cameraNr = 1;
-	for(int i = 0; i < offspring.height; i++) {
-        for(int j = 0; j < offspring.width; j++) {
-            if(offspring.arrangement[i][j].room == true) {
-                if(offspring.arrangement[i][j].camera == true) {
-                    offspring.camerasNumber++;
-                    offspring.cameraSettingView(cameraNr);
-                }
-                cameraNr++;
-            }   
-        }
-    }
 
 	return offspring;
 }
@@ -286,29 +255,18 @@ Individual Individual::newRandomIndividual() {
     Individual offspring;
     offspring.setArrangement(this->arrangement);
 
-    srand(time(NULL));
+    std::random_device prob;
+    std::mt19937 mt(prob());
+    std::uniform_int_distribution<int> cameraSetting(1, 100);
+    int isCamera;
+
 	for(int i = 0; i < this->height; i++) {
         for(int j = 0; j < this->width; j++) {
-			if(rand()%2 == 0)  //camera isn't here
-				offspring.arrangement[i][j].camera = false;
-			else //camera is here
+			isCamera = cameraSetting(mt);
+            if(isCamera > 15 && isCamera < 85)  
 				offspring.arrangement[i][j].camera = true;
-        }
-    }
-
-    offspring.cleanNumberOfCamerasForEachPoint();
-	offspring.camerasNumber = 0;
-
-    int cameraNr = 1;
-	for(int i = 0; i < offspring.height; i++) {
-        for(int j = 0; j < offspring.width; j++) {
-            if(offspring.arrangement[i][j].room == true) {
-                if(offspring.arrangement[i][j].camera == true) {
-                    offspring.camerasNumber++;
-                    offspring.cameraSettingView(cameraNr);
-                }
-                cameraNr++;
-            }   
+			else 
+				offspring.arrangement[i][j].camera = false;
         }
     }
 
@@ -349,56 +307,30 @@ void Individual::mutation(int populationSize) {
                 }
             }
         }
-    } else {               //without mutation
-        return;
     }
-	
-	if(this->doesItMeetRequierments() == false && counter < 5){
-		int acx, acy;		// coordinates of additional camera
-		int sacx, sacy;		// coordinates of additional camera on start
-		
-		counter++;
-		
-		std::random_device prob3;
-        std::mt19937 mt3(prob3());
-        std::uniform_int_distribution<int> whichRoomPointX(0, this->height);
-        sacx = whichRoomPointX(mt3);
-		
-		std::random_device prob4;
-        std::mt19937 mt4(prob4());
-        std::uniform_int_distribution<int> whichRoomPointY(0, this->width);
-        sacy = whichRoomPointY(mt4);
-		
-		acx = sacx + 1;
-		acy = sacy + 1;
-		
-		if(acy >= this->width){
-			acy = 0;
-			acx++;
-		}
-		if(acx >= this->height){
-			acx = 0;
-		}
-		
-		while(this->arrangement[acx][acy].room == false || this->arrangement[acx][acy].camera == false || this->arrangement[acx][acy].numberOfCameras >= minNumberOfCameras){
-			acy++;
-			if(acy >= this->width){
-				acy = 0;
-				acx++;
-			}
-			if(acx >= this->height){
-				acx = 0;
-				acy = 0;
-			}
-			if(acx == sacx && acy == sacy)
-				break;
-		}
-		
-		if(this->arrangement[acx][acy].room == true || this->arrangement[acx][acy].camera == true || this->arrangement[acx][acy].numberOfCameras < minNumberOfCameras){
-				this->arrangement[acx][acy].camera = true;
-				this->camerasNumber++;
-		}
-	}
+}
+
+void Individual::additionalMutation() {
+    int pointNr, x, y;
+    
+    if(this->fitness[0] < 1.0) {
+        bool b = 1;
+        std::random_device prob;
+        std::mt19937 mt(prob());
+        std::uniform_int_distribution<int> whichPoint(1, this->roomSurface);
+        
+        while(b == 1) {
+            pointNr = whichPoint(mt);
+            this->findPointCoordinates(pointNr, ref(x), ref(y));
+            if(this->arrangement[x][y].numberOfCameras < this->minNumberOfCameras) {
+                this->arrangement[x][y].camera = true;
+                b = 0;
+            }
+        }
+    }
+
+    this->cleanNumberOfCamerasForEachPoint();
+	this->camerasNumber = 0;
 
     //set cameras' view (increment for room points)
     int cameraNr = 1;
@@ -406,13 +338,13 @@ void Individual::mutation(int populationSize) {
         for(int j = 0; j < this->width; j++) {
             if(this->arrangement[i][j].room == true) {
                 if(this->arrangement[i][j].camera == true) {
+                    this->camerasNumber++;
                     this->cameraSettingView(cameraNr);
                 }
                 cameraNr++;
             }   
         }
     }
-
 }
 
 
