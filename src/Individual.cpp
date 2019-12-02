@@ -353,9 +353,11 @@ void Individual::mutation(int populationSize) {
         return;
     }
 	
-	while(this->doesItMeetRequierments() == false){
+	if(this->doesItMeetRequierments() == false && counter < 5){
 		int acx, acy;		// coordinates of additional camera
 		int sacx, sacy;		// coordinates of additional camera on start
+		
+		counter++;
 		
 		std::random_device prob3;
         std::mt19937 mt3(prob3());
